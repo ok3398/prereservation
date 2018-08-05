@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <appender name="log-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>D:\project\reservation-api.json</file>
+        <encoder>
+            <Pattern>{"timestamp":"%d{yyyyMMdd HH🇲🇲ss.SSS}", "level":"%-5level", "package":"%logger{36}"}, [%file:%line] %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>D:\project\reservation-api.log.%d{yyyy-MM-dd}.gz</FileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="reservation" level="INFO" additivity="false">
+        <appender-ref ref="log-file" />
+    </logger>
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="log-file" />
+    </logger>
+
+    <root>
+        <level value="TRACE" />
+        <appender-ref ref="log-file" />
+    </root>
+</configuration>
