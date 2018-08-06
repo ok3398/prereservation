@@ -22,6 +22,10 @@ public interface PreReservationDao {
     })
     String selectPreReservationCount(@Param("preserv_id") int preserv_id);
 
+//    SELECT    seq, user_id,
+//    @curRank := @curRank + 1 as rrr
+//    FROM      preservation_join p, (SELECT @curRank := 0) r
+//    ORDER BY  seq ;
 
 
 //    @Select(value = "{call dbo.MSP_SELECT_NONLICENCE_SONG_BY_LID( #{sid, mode=IN},#{lid, mode=IN})}")
