@@ -6,8 +6,6 @@ import org.joda.time.DateTime;
 
 @Data
 public class EnrollResponseVO extends CommonResponseVO{
-    @JsonProperty("seq")
-    private long seq;
     @JsonProperty("regTime")
     private String regTime;
 }

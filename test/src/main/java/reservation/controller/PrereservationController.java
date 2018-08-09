@@ -20,7 +20,7 @@ public class PrereservationController {
      * user_id 가 preserv_id 사전예약에 참여하는 api
      * **/
     @RequestMapping(value = "/enroll/{preserv_id}/{user_id}")
-    public Object enroll(HttpServletRequest httpServletRequest, @PathVariable int preserv_id, @PathVariable long user_id){
+    public Object enroll(@PathVariable int preserv_id, @PathVariable long user_id){
         return prereservationService.enroll(preserv_id, user_id);
     }
 
@@ -28,14 +28,14 @@ public class PrereservationController {
      *  preserv_id 에 참여한 총 카운트 조회 api
      *  **/
     @RequestMapping(value = "/count/{preserv_id}")
-    public Object count(HttpServletRequest httpServletRequest, @PathVariable int preserv_id){
+    public Object count(@PathVariable int preserv_id){
         return prereservationService.count(preserv_id);
     }
     /**
     * user_id 가 preserv_id 사전예약에 참여했는지
     **/
     @RequestMapping(value = "/check/{preserv_id}/{user_id}")
-    public Object check(HttpServletRequest httpServletRequest, @PathVariable int preserv_id, @PathVariable long user_id){
+    public Object check(@PathVariable int preserv_id, @PathVariable long user_id){
         return prereservationService.check(preserv_id, user_id);
     }
 

@@ -47,16 +47,13 @@ public class PrereservationService {
         }
 
         try {
-            int seq  = preReservationDao.insertPreReservation(user_id,preserv_id, yearlyFmt.print(nowTime));
+            int seq  = preReservationDao.insertPreReservation(user_id,preserv_id,yearlyFmt.print(nowTime)  );
             enrollResponseVO.setSeq(seq);
         }catch(Exception e){
             enrollResponseVO.setErrorCode("-2");
             enrollResponseVO.setErrorMsg("중복/오류");
             return enrollResponseVO;
         }
-
-
-
 
         enrollResponseVO.setErrorCode("0");
         enrollResponseVO.setErrorMsg("성공");

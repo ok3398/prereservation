@@ -3,6 +3,7 @@ package reservation.dao;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.StatementType;
+import org.joda.time.DateTime;
 import reservation.vo.CheckResponseVO;
 
 import java.util.Map;
@@ -30,13 +31,11 @@ public interface PreReservationDao {
     Map<String,Object> selectPreReservationJoinMember(@Param("preserv_id") int preserv_id,@Param("user_id") long user_id);
 
 
-    @SelectKey(statement="select max(seq)+1 as seqs from preservation_join where  preserv_id = #{preserv_id};", keyProperty="seqs", before=true, resultType=int.class)
     @Insert(value = {
             "insert into preservation_join (user_id, preserv_id, seq, reg_time) " +
-            "select #{user_id},#{preserv_id}, '#{seqs}' , '#{reg_time}'" +
-            "from preservation_join where preserv_id = #{preserv_id};"
+            "select #{user_id}, #{preserv_id},  max(seq)+1  , #{reg_time}" +
+            " from preservation_join where preserv_id = #{preserv_id};"
             })
-
     int insertPreReservation(@Param("user_id") long user_id, @Param("preserv_id") int preserv_id, @Param("reg_time") String reg_time);
 
     @Results({
@@ -53,19 +52,19 @@ public interface PreReservationDao {
      * TYPE 1**/
     @Results({
             @Result(property = "seq", column = "seq"),
-            @Result(property = "user_id", column = "user_id"),
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "rank1", column = "rank1"),
     })
     @Options(statementType = StatementType.CALLABLE)
     @Select(value = {
-            "select * from (" +
+            " select * from (" +
             "    select  user_id," +
             "            @curRank := @curRank + 1 as rank1" +
             "    from    preservation_join p, (select @curRank := 0) t1" +
             "    where   preserv_id =  #{preserv_id}" +
             "    order by  seq " +
             "    ) t2" +
-            "where a.user_id = #{user_id};"
+            " where t2.user_id = #{user_id};"
     })
     CheckResponseVO selectPreReservationMyRankType1(@Param("preserv_id") int preserv_id, @Param("user_id") long user_id);
     /**
