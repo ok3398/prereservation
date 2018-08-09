@@ -5,6 +5,11 @@ import lombok.Data;
 
 @Data
 public class CommonResponseVO {
+    @JsonProperty("errorCode")
+    private String  errorCode;
+    @JsonProperty("errorMsg")
+    private String errorMsg;
+
     @JsonProperty("userId")
     private long userId;
     @JsonProperty("preservId")

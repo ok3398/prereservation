@@ -9,5 +9,5 @@ public class EnrollResponseVO extends CommonResponseVO{
     @JsonProperty("seq")
     private long seq;
     @JsonProperty("regTime")
-    private DateTime regTime;
+    private String regTime;
 }

@@ -1,6 +1,8 @@
 package reservation.service;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -12,6 +14,8 @@ import reservation.vo.CheckResponseVO;
 import reservation.vo.CountResponseVO;
 import reservation.vo.EnrollResponseVO;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 public class PrereservationService {
@@ -19,15 +23,43 @@ public class PrereservationService {
     private PreReservationDao preReservationDao;
 
     public EnrollResponseVO enroll(int preserv_id, long user_id){
-        EnrollResponseVO enrollResponseVO = new EnrollResponseVO();
-
 
         DateTime nowTime = DateTime.now();
         DateTimeFormatter yearlyFmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:SS");
 
+        EnrollResponseVO enrollResponseVO = new EnrollResponseVO();
+        enrollResponseVO.setUserId(user_id);
+        enrollResponseVO.setPreservId(preserv_id);
+        enrollResponseVO.setRegTime(yearlyFmt.print(nowTime));
 
-        preReservationDao.insertPreReservation(user_id,preserv_id, yearlyFmt.print(nowTime) );
+        Map<String,Object> masterData = preReservationDao.selectPreReservationMaster(preserv_id);
 
+        if (MapUtils.getString(masterData,"start_time").compareTo(yearlyFmt.print(nowTime) ) > 0) {
+            enrollResponseVO.setErrorCode("-1");
+            enrollResponseVO.setErrorMsg("사전 예약 기간이 아닙니다.");
+            return enrollResponseVO;
+        }
+
+        if (MapUtils.getString(masterData,"end_time").compareTo(yearlyFmt.print(nowTime) ) < 0) {
+            enrollResponseVO.setErrorCode("-1");
+            enrollResponseVO.setErrorMsg("사전 예약 기간이 종료되었습니다.");
+            return enrollResponseVO;
+        }
+
+        try {
+            int seq  = preReservationDao.insertPreReservation(user_id,preserv_id, yearlyFmt.print(nowTime));
+            enrollResponseVO.setSeq(seq);
+        }catch(Exception e){
+            enrollResponseVO.setErrorCode("-2");
+            enrollResponseVO.setErrorMsg("중복/오류");
+            return enrollResponseVO;
+        }
+
+
+
+
+        enrollResponseVO.setErrorCode("0");
+        enrollResponseVO.setErrorMsg("성공");
 
 
         return enrollResponseVO;
