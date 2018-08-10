@@ -9,10 +9,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import reservation.dao.PreReservationDao;
 import reservation.vo.CheckResponseVO;
 import reservation.vo.CountResponseVO;
 import reservation.vo.EnrollResponseVO;
+import reservation.vo.EnrollVO;
 
 import java.util.Map;
 
@@ -34,6 +36,12 @@ public class PrereservationService {
 
         Map<String,Object> masterData = preReservationDao.selectPreReservationMaster(preserv_id);
 
+        if (masterData == null){
+            enrollResponseVO.setErrorCode("-1");
+            enrollResponseVO.setErrorMsg("사전 예약 정보가 없습니다.");
+            return enrollResponseVO;
+        }
+
         if (MapUtils.getString(masterData,"start_time").compareTo(yearlyFmt.print(nowTime) ) > 0) {
             enrollResponseVO.setErrorCode("-1");
             enrollResponseVO.setErrorMsg("사전 예약 기간이 아닙니다.");
@@ -47,8 +55,13 @@ public class PrereservationService {
         }
 
         try {
-            int seq  = preReservationDao.insertPreReservation(user_id,preserv_id,yearlyFmt.print(nowTime)  );
-            enrollResponseVO.setSeq(seq);
+            EnrollVO enrollVO = new EnrollVO();
+            enrollVO.setPreservId(preserv_id);
+            enrollVO.setUserId(user_id);
+            enrollVO.setRegTime(yearlyFmt.print(nowTime));
+
+            preReservationDao.insertPreReservation(enrollVO);
+          enrollResponseVO.setSeq(String.valueOf(enrollVO.getResult()));
         }catch(Exception e){
             enrollResponseVO.setErrorCode("-2");
             enrollResponseVO.setErrorMsg("중복/오류");
@@ -63,7 +76,6 @@ public class PrereservationService {
 
     }
 
-    @Cacheable(cacheNames = "countCache", key="#{preserv_id}")
     public CountResponseVO count(int preserv_id){
         CountResponseVO countResponseVO = new CountResponseVO();
         String count = preReservationDao.selectPreReservationCount(preserv_id);

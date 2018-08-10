@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import reservation.vo.CheckResponseVO;
+import reservation.vo.EnrollVO;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,10 +41,14 @@ public class PreReservationDaoTest {
 
         DateTime nowTime = DateTime.now();
         DateTimeFormatter yearlyFmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:SS");
+        EnrollVO enrollVO = new EnrollVO();
+        enrollVO.setPreservId(1);
+        enrollVO.setUserId(3333);
+        enrollVO.setRegTime(yearlyFmt.print(nowTime));
 
-        int seq  = preReservationDao.insertPreReservation(33333,1, yearlyFmt.print(nowTime)  );
+        preReservationDao.insertPreReservation(enrollVO);
 
-        System.out.println(seq);
+        System.out.println(enrollVO.getResult());
     }
 
     @Test

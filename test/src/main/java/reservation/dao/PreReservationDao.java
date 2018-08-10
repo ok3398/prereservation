@@ -4,7 +4,9 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.StatementType;
 import org.joda.time.DateTime;
+import org.springframework.cache.annotation.Cacheable;
 import reservation.vo.CheckResponseVO;
+import reservation.vo.EnrollVO;
 
 import java.util.Map;
 
@@ -31,13 +33,13 @@ public interface PreReservationDao {
     Map<String,Object> selectPreReservationJoinMember(@Param("preserv_id") int preserv_id,@Param("user_id") long user_id);
 
 
-    @Insert(value = {
-            "insert into preservation_join (user_id, preserv_id, seq, reg_time) " +
-            "select #{user_id}, #{preserv_id},  max(seq)+1  , #{reg_time}" +
-            " from preservation_join where preserv_id = #{preserv_id};"
-            })
-    int insertPreReservation(@Param("user_id") long user_id, @Param("preserv_id") int preserv_id, @Param("reg_time") String reg_time);
+    @Insert(value =
+            "{call sp_insert_preservation_data (#{userId}, #{preservId}, #{regTime}, #{result, mode=OUT, jdbcType=INTEGER})}")
+    @Options(statementType = StatementType.CALLABLE)
+    void insertPreReservation(EnrollVO enrollVO);
 
+
+    @Cacheable(value="countCache", key="'preserv_id'")
     @Results({
             @Result(property = "reservationCount",column ="countn" )
     })

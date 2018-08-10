@@ -8,4 +8,6 @@ import org.joda.time.DateTime;
 public class EnrollResponseVO extends CommonResponseVO{
     @JsonProperty("regTime")
     private String regTime;
+    @JsonProperty("seq")
+    private String seq;
 }
